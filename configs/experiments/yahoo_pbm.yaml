@@ -1,0 +1,57 @@
+exp_name: "yahoo_pbm"
+dataset: "yahoo"
+folds: [1,2,3,4,5]  # For Yahoo: repeated runs with different seeds
+base_config_path: "~/ope/configs/runs/{exp_name}"
+base_exp_path: "~/ope/results/experiments/{exp_name}/{dataset}/fold{fold}"
+base_training_path: "~/ope/results/experiments/{exp_name}/{dataset}/training"
+
+logging_model: "2_3_worst_features"
+target_model: "all_features"
+
+subsets: ["train", "vali", "test"]
+
+nsampled_values: [1, 5, 25]
+
+pb_types: ["pbdcg", "pbinvrank"]
+ndocs_values: [50]
+logging_temps: [0.2, 0.6, 1]
+target_temps: [1]
+
+bias_configs:
+  - ["bias_pow0_6", 0.6, "pow"]
+  - ["bias_pow1_4", 1.4, "pow"]
+  - ["bias_pow1_2", 1.2, "pow"]
+  - ["bias_pow0_8", 0.8, "pow"]
+  - ["bias_plus0", 0.0, "plus"]
+  - ["bias_minus0_1", 0.1, "minus"]
+  - ["bias_zigzag0_1", 0.1, "zigzag"]
+
+eps_multipliers:
+  - ["eps_times1_5", 1.5]
+
+prop_clamp_min: 0.0000001
+single_repeat: false
+max_outer: 1000
+patience: 100
+use_slope: true
+use_blue: true
+use_opera: true
+blue_configs: {
+  "BLUE": ["w0", "w9"]
+} 
+opera_configs: {
+  "OPERA": ["w0", "w9"]
+} 
+
+
+n_samples: 50
+n_repeats: 50
+n_F_repeats: 50
+chunk_size: 800000
+bootstrap_chunk: 50
+subsample_ratio: 0.5
+bias_subsample_ratio: 0.5
+
+training_configs:
+  - ["2_3_worst_features", "{dataset}", 66.67, "worst"]
+  - ["all_features", "{dataset}", 100, "worst"]
