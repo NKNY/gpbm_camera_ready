@@ -168,6 +168,7 @@ def compute_blue(estimator_names, data, K):
         where each list contains per-batch tensors that get concatenated
     :param K: Number of positions (for SNIPS normalization)
     :return: (blue_estimate, blue_variance, weights_dict) or (None, None, None) if failed
+
     """
     n_est = len(estimator_names)
     if n_est == 0:

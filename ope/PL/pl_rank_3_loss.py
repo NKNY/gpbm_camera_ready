@@ -72,7 +72,6 @@ def pl_rank_3_gradient(
     if (mask.sum(dim=1) <= 1).all():
         return torch.zeros_like(scores)
 
-    # Work in log-space: normalize scores for numerical stability
     log_scores = (
         scores - scores.masked_fill(~mask, float("-inf")).max(dim=1, keepdim=True)[0]
     )
@@ -91,9 +90,6 @@ def pl_rank_3_gradient(
         (sampled_labels * rank_weights[:cutoff]).flip([2]).cumsum(dim=2).flip([2])
     )
 
-    # Gradient: ∂L/∂s_d = E[Σ_k 1_{r_k=d} * Σ_{j>k} g_j / p_j] - E[Σ_k (exp(s_d)/Σ_i exp(s_i)) * Σ_{j≥k} g_j / p_j]
-    # where g_j = gain at position j, p_j = P(ranking prefix r_{<j})
-    # First part: contribution when d is ranked; Second part: expected contribution weighted by selection prob
     result = torch.zeros(batch_size, n_docs, device=device, dtype=dtype)
     if cutoff > 1:
         flat_idx = (
@@ -103,16 +99,11 @@ def pl_rank_3_gradient(
         result.view(-1).scatter_add_(0, flat_idx, cumsum_labels[:, :, 1:].reshape(-1))
         result /= n_samples
 
-    # Compute log-denominators using logsumexp for stability
-    # log_denom[k] = log(sum_{i not in r_{<k}} exp(s_i))
     log_total = torch.logsumexp(log_scores, dim=1, keepdim=True)  # (batch, 1)
     sampled_log_scores = torch.gather(
         log_scores.unsqueeze(0).expand(n_samples, -1, -1), 2, rankings
     )
 
-    # log(total - cumsum(exp(sampled))) = log(total * (1 - cumsum(exp(sampled))/total))
-    # = log_total + log(1 - exp(log_cumsum_exp - log_total))
-    # Use log1mexp for numerical stability: log(1 - exp(x)) for x < 0
     cumsum_log_exp = torch.logcumsumexp(sampled_log_scores, dim=2)
     ratio = cumsum_log_exp[:, :, :-1] - log_total.unsqueeze(0)  # negative values
     log_one_minus_ratio = torch.log1p(
@@ -126,13 +117,10 @@ def pl_rank_3_gradient(
         dim=2,
     )
 
-    # weight/denom and cumsum_labels/denom in log-space, then cumsum
-    # These sums can't stay in log-space, so we convert back
     inv_denom = torch.exp(-log_denom)  # 1/denom
     cumsum_weight_denom = (rank_weights[:cutoff] * inv_denom).cumsum(dim=2)
     cumsum_reward_denom = (cumsum_labels * inv_denom).cumsum(dim=2)
 
-    # Second part: exp(log_scores) * (labels * cumsum_weight_denom - cumsum_reward_denom)
     cwd_last = cumsum_weight_denom[:, :, -1:]
     crd_last = cumsum_reward_denom[:, :, -1:]
 

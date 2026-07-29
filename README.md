@@ -1,7 +1,20 @@
 ## Generalized Position-Bias Model (GPBM)
 
-This repo contains the code for the experiments in our paper "Generalized Position-Based Model: Rethinking Position Weights
-in Ranking Off-Policy Evaluation".
+This repo contains the code for the experiments in our paper "Generalized Position-Based Model: Rethinking Position Weights in Ranking Off-Policy Evaluation" published in RecSys 2026.
+
+Citation
+----
+
+If you use this code to produce results for your scientific publication, or if you share a copy or fork, please refer to our RecSys 2026 paper:
+```
+@inproceedings{knyazev2026Generalized,
+  Author = {Knyazev, Norman and Bellini, Vito and Yurtseven, Huseyin and London, Ben},
+  Title = {Generalized Position-Based Model: Rethinking Position Weights in Ranking Off-Policy Evaluation},
+  Booktitle={Proceedings of the 20th ACM Conference on Recommender Systems},
+  Publisher = {Association for Computing Machinery}
+  Year = {2026}
+}
+```
 
 We perform off-policy evaluation (OPE) for ranking, comparing our new estimator GPBM against baseline estimators (IPM, PBM, INTERPOL, etc.) under varying position bias, policy temperatures, and sample sizes.
 Our code is split into two high-level parts. Our first part (the pipeline) is used to train logging and target policies, calculate propensities, generate user clicks, optimize GPBM's $F$-matrix and evaluate GPBM and the baselines across different settings.
@@ -10,7 +23,7 @@ The second part, run via a single jupyter notebook, is used to process and visua
 ### Requirements
 
 - Python 3.10+
-- A CUDA-capable GPU is recommended (e.g., 16 GB VRAM, 32 GB RAM). The code runs on CPU but will GPU will be significantly faster.
+- The code has been tested on a CUDA-compatible GPU with 16 GB VRAM alongside an 8-core CPU with 16GB RAM. The code also runs fully on CPU but with GPU it will be significantly faster.
 - GNU `parallel` (optional, for multi-GPU parallelization): `sudo apt install parallel`
 
 Install Python dependencies:
@@ -19,7 +32,7 @@ pip install -r requirements.txt
 ```
 
 Dependencies: `numpy`, `torch`, `tensorflow`, `tfds-nightly`, `tqdm`, `cvxpy`, `jupyterlab`.
-Result visualization also assumes an 
+Result visualization also assumes a local installation of latex. 
 
 ### Dataset Setup
 
