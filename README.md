@@ -1,7 +1,20 @@
 ## Generalized Position-Bias Model (GPBM)
 
-This repo contains the code for the experiments in our paper "Generalized Position-Based Model: Rethinking Position Weights
-in Ranking Off-Policy Evaluation".
+This repo contains the code for the experiments in our paper "Generalized Position-Based Model: Rethinking Position Weights in Ranking Off-Policy Evaluation" published in RecSys 2026.
+
+Citation
+----
+
+If you use this code to produce results for your scientific publication, or if you share a copy or fork, please refer to our RecSys 2026 paper:
+```
+@inproceedings{knyazev2026Generalized,
+  Author = {Knyazev, Norman and Bellini, Vito and Yurtseven, Huseyin and London, Ben},
+  Title = {Generalized Position-Based Model: Rethinking Position Weights in Ranking Off-Policy Evaluation},
+  Booktitle={Proceedings of the 20th ACM Conference on Recommender Systems},
+  Publisher = {Association for Computing Machinery}
+  Year = {2026}
+}
+```
 
 We perform off-policy evaluation (OPE) for ranking, comparing our new estimator GPBM against baseline estimators (IPM, PBM, INTERPOL, etc.) under varying position bias, policy temperatures, and sample sizes.
 Our code is split into two high-level parts. Our first part (the pipeline) is used to train logging and target policies, calculate propensities, generate user clicks, optimize GPBM's $F$-matrix and evaluate GPBM and the baselines across different settings.
