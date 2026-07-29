@@ -10,7 +10,7 @@ The second part, run via a single jupyter notebook, is used to process and visua
 ### Requirements
 
 - Python 3.10+
-- A CUDA-capable GPU is recommended (e.g., 16 GB VRAM, 32 GB RAM). The code runs on CPU but will GPU will be significantly faster.
+- The code has been tested on a CUDA-compatible GPU with 16 GB VRAM alongside an 8-core CPU with 16GB RAM. The code also runs fully on CPU but with GPU it will be significantly faster.
 - GNU `parallel` (optional, for multi-GPU parallelization): `sudo apt install parallel`
 
 Install Python dependencies:
@@ -19,7 +19,7 @@ pip install -r requirements.txt
 ```
 
 Dependencies: `numpy`, `torch`, `tensorflow`, `tfds-nightly`, `tqdm`, `cvxpy`, `jupyterlab`.
-Result visualization also assumes an 
+Result visualization also assumes a local installation of latex. 
 
 ### Dataset Setup
 

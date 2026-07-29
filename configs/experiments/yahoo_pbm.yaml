@@ -12,7 +12,7 @@ subsets: ["train", "vali", "test"]
 
 nsampled_values: [1, 5, 25]
 
-pb_types: ["pbdcg", "pbinvrank"]
+pb_types: ["pbdcg"]
 ndocs_values: [50]
 logging_temps: [0.2, 0.6, 1]
 target_temps: [1]

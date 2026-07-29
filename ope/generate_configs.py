@@ -32,23 +32,7 @@ def get_pb_exprs(pb_type, bias_name, val, bias_type, K):
     zigzag_scaled = (
         f"[z * math.sin(math.pi * (k+1) / ({K}+1)) for k, z in enumerate({zigzag})]"
     )
-    if pb_type == "pbinvrank":
-        true_pb_expr = f"[1/(i+1) for i in range({K})]"
-        if bias_type == "pow":
-            pb_expr = f"[(1/(i+1))**{val} for i in range({K})]"
-            base_eps_expr = f"[abs((1/(i+1)) - (1/(i+1))**{val}) for i in range({K})]"
-        elif bias_type == "plus":
-            pb_expr = f"[min((1/(i+1)) + {val}, 1) for i in range({K})]"
-            base_eps_expr = f"[{val}]*{K}"
-        elif bias_type == "zigzag":
-            pb_expr = (
-                f"[1/(i+1) + s*{val} for i, s in zip(range({K}), {zigzag_scaled})]"
-            )
-            base_eps_expr = f"[abs(s*{val}) for s in {zigzag_scaled}]"
-        else:
-            pb_expr = f"[(1/(i+1)) - {val} for i in range({K})]"
-            base_eps_expr = f"[{val}]*{K}"
-    else:
+    if pb_type == "pbdcg":
         true_pb_expr = f"[math.log2(i+1)**-1 for i in range(1, {K + 1})]"
         if bias_type == "pow":
             pb_expr = f"[(math.log2(i+1)**-1)**{val} for i in range(1, {K + 1})]"
@@ -57,11 +41,13 @@ def get_pb_exprs(pb_type, bias_name, val, bias_type, K):
             pb_expr = f"[min(math.log2(i+1)**-1 + {val}, 1) for i in range(1, {K + 1})]"
             base_eps_expr = f"[{val}]*{K}"
         elif bias_type == "zigzag":
-            pb_expr = f"[math.log2(i+1)**-1 + s*{val} for i, s in zip(range(1, {K + 1}), {zigzag_scaled})]"
+            pb_expr = f"[min(1, math.log2(i+1)**-1 + s*{val}) for i, s in zip(range(1, {K + 1}), {zigzag_scaled})]"
             base_eps_expr = f"[abs(s*{val}) for s in {zigzag_scaled}]"
         else:
             pb_expr = f"[(math.log2(i+1)**-1) - {val} for i in range(1, {K + 1})]"
             base_eps_expr = f"[{val}]*{K}"
+    else:
+        print("Unsupported bias type!")
     return pb_expr, base_eps_expr, true_pb_expr
 
 
@@ -181,8 +167,8 @@ config = Config(
         training_config_relpath = f"training/{dataset}/{fold_part}/{model}.py"
         for pb_type in pb_types:
             true_pb_expr = (
-                f"[1/(i+1) for i in range({K})]"
-                if pb_type == "pbinvrank"
+                f"[math.log2(i+1)**-1 for i in range(1, {K + 1})]"
+                if pb_type == "pbdcg"
                 else f"[math.log2(i+1)**-1 for i in range(1, {K + 1})]"
             )
 
